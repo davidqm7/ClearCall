@@ -3,6 +3,21 @@
 ## Overview
 ClearCall is the analytics layer of a Contact Center as a Service (CCaaS) environment. While operational systems like RouteIQ handle live call routing, ClearCall processes what happens after the call concludes. It ingests synthetic Interactive Voice Response (IVR) interaction records, transforms the data through an ETL pipeline, and stores it in a query-optimized NoSQL database. A Spring Boot REST API then exposes this data to provide insights into agent handle times, IVR containment rates, and call category trends.
 
+## Team & Collaboration
+This project was developed collaboratively with [Jathan](https://github.com/jlazala3102). We utilized a professional Git workflow, ensuring all development happened on isolated feature branches and was merged into the main branch via code reviews and Pull Requests.
+
+### Division of Labor
+* **Data Generation (Python):** * Script core, weighted randomness, and IVR logic (Jathan)
+  * CLI implementation and File I/O (David)
+* **ETL Pipeline (Python):** * JSON Extraction and Data Validation (Jathan)
+  * Data Transformation and Cassandra Loading (David)
+  * Pipeline Orchestration (Jathan)
+* **Database (Cassandra):** Schema design, table creation, and Docker configuration (Co-authored)
+* **Reporting Service (Spring Boot):** * Spring setup and initial configuration (David)
+  * Data Models, Repositories, and Service logic (Co-authored)
+  * Category and Date Analytics Endpoints (Jathan)
+  * Agent Analytics Endpoints (David & Jathan)
+
 ## Technology Stack
 * Data Generation & ETL: Python 3.11+, argparse, dataclasses
 * Database: Apache Cassandra (Docker)
