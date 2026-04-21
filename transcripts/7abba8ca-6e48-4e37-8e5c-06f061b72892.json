@@ -1,0 +1,15 @@
+{
+  "callId": "7abba8ca-6e48-4e37-8e5c-06f061b72892",
+  "startTime": "2026-03-26T10:02:26.104706+00:00",
+  "endTime": "2026-03-26T10:09:20.104706+00:00",
+  "callCategory": "BILLING",
+  "ivrContained": false,
+  "escalatedToAgent": true,
+  "agentId": "agent-5",
+  "ivrPath": [
+    "WELCOME",
+    "BILLING",
+    "ACCOUNT_LOOKUP",
+    "TRANSFER_TO_AGENT"
+  ]
+}

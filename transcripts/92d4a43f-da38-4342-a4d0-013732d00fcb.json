@@ -1,0 +1,15 @@
+{
+  "callId": "92d4a43f-da38-4342-a4d0-013732d00fcb",
+  "startTime": "2026-04-05T10:46:26.074240+00:00",
+  "endTime": "2026-04-05T10:51:14.074240+00:00",
+  "callCategory": "GENERAL",
+  "ivrContained": false,
+  "escalatedToAgent": true,
+  "agentId": "agent-3",
+  "ivrPath": [
+    "WELCOME",
+    "GENERAL",
+    "MENU_HELP",
+    "TRANSFER_TO_AGENT"
+  ]
+}

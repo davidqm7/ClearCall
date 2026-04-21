@@ -1,0 +1,14 @@
+{
+  "callId": "076c044d-bab3-456b-b3d1-43b6beb47b6f",
+  "startTime": "2026-03-21T23:59:44.414059+00:00",
+  "endTime": "2026-03-22T00:03:50.414059+00:00",
+  "callCategory": "SALES",
+  "ivrContained": false,
+  "escalatedToAgent": true,
+  "agentId": "agent-5",
+  "ivrPath": [
+    "WELCOME",
+    "GENERAL",
+    "RESOLVED"
+  ]
+}

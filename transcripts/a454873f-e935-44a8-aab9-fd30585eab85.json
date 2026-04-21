@@ -1,0 +1,14 @@
+{
+  "callId": "a454873f-e935-44a8-aab9-fd30585eab85",
+  "startTime": "2026-03-30T19:32:44.374106+00:00",
+  "endTime": "2026-03-30T19:39:40.374106+00:00",
+  "callCategory": "BILLING",
+  "ivrContained": false,
+  "escalatedToAgent": true,
+  "agentId": "agent-4",
+  "ivrPath": [
+    "WELCOME",
+    "GENERAL",
+    "RESOLVED"
+  ]
+}

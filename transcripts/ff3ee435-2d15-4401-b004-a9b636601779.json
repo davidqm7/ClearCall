@@ -1,0 +1,15 @@
+{
+  "callId": "ff3ee435-2d15-4401-b004-a9b636601779",
+  "startTime": "2026-03-25T07:57:26.066014+00:00",
+  "endTime": "2026-03-25T08:02:52.066014+00:00",
+  "callCategory": "TECHNICAL",
+  "ivrContained": false,
+  "escalatedToAgent": true,
+  "agentId": "agent-1",
+  "ivrPath": [
+    "WELCOME",
+    "TECHNICAL",
+    "DEVICE_CHECK",
+    "TRANSFER_TO_AGENT"
+  ]
+}

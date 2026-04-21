@@ -1,0 +1,15 @@
+{
+  "callId": "548d9151-455a-45fa-92f9-898d19f61aee",
+  "startTime": "2026-03-12T22:39:26.082240+00:00",
+  "endTime": "2026-03-12T22:50:38.082240+00:00",
+  "callCategory": "SALES",
+  "ivrContained": false,
+  "escalatedToAgent": true,
+  "agentId": "agent-3",
+  "ivrPath": [
+    "WELCOME",
+    "SALES",
+    "PRODUCT_INFO",
+    "TRANSFER_TO_AGENT"
+  ]
+}

@@ -1,0 +1,13 @@
+# Python Virtual Environment
+.venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Java/Spring Boot Compiled Files (since you mentioned Java is in here too)
+target/
+*.class
+
+# Environment Variables (if you have any API keys)
+.env

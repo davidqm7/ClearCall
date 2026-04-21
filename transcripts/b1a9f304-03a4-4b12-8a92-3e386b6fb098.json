@@ -1,0 +1,14 @@
+{
+  "callId": "b1a9f304-03a4-4b12-8a92-3e386b6fb098",
+  "startTime": "2026-04-03T11:17:44.403804+00:00",
+  "endTime": "2026-04-03T11:26:13.403804+00:00",
+  "callCategory": "TECHNICAL",
+  "ivrContained": false,
+  "escalatedToAgent": true,
+  "agentId": "agent-2",
+  "ivrPath": [
+    "WELCOME",
+    "GENERAL",
+    "RESOLVED"
+  ]
+}
