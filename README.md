@@ -1,52 +1,70 @@
-# ClearCall - Conversation Analytics Platform
+# ClearCall - CCaaS Conversation Analytics Platform
 
-## Team 5
-* David
-* Jathan
+## Overview
+ClearCall is the analytics layer of a Contact Center as a Service (CCaaS) environment. While operational systems like RouteIQ handle live call routing, ClearCall processes what happens after the call concludes. It ingests synthetic Interactive Voice Response (IVR) interaction records, transforms the data through an ETL pipeline, and stores it in a query-optimized NoSQL database. A Spring Boot REST API then exposes this data to provide insights into agent handle times, IVR containment rates, and call category trends.
 
-## Source Control & Branching Strategy
-* **Feature Branches:** All development will happen on feature branches (e.g., `feature/transcript-generator`, `feature/etl-parser`, `feature/spring-setup`).
-* **Merge Process:** Push to your feature branch, open a Pull Request, and review together before merging into `main`. Do not push directly to `main`.
-* **Conflict Resolution:** If both team members modify shared files (like `main.py` or the `application.yml`), communicate before merging to resolve conflicts cleanly.
+## Technology Stack
+* Data Generation & ETL: Python 3.11+, argparse, dataclasses
+* Database: Apache Cassandra (Docker)
+* Backend API: Java, Spring Boot, Spring Data Cassandra
+* Architecture: Microservices, ETL Pipeline, Event-Driven Data Modeling
 
-## The Data Contract
-All components must adhere strictly to these values.
-* **callCategory values:** `BILLING`, `TECHNICAL`, `SALES`, `GENERAL`
-* **agentId values:** `agent-1`, `agent-2`, `agent-3`, `agent-4`, `agent-5`
-* **Transcript Path:** `./transcripts/` (Generator writes here, ETL reads from here)
+## Project Architecture
 
----
+### 1. Synthetic Data Generator (Python)
+A highly configurable Python script that produces synthetic JSON transcript files representing completed IVR interactions. It implements dynamic business logic to simulate realistic contact center traffic, including weighted call categories (Billing, Technical, Sales, General) and conditional IVR containment rules.
 
-## Project Roadmap & Implementation Sequence
+### 2. ETL Pipeline (Python)
+An automated Extract, Transform, Load pipeline:
+* Extract: Parses raw JSON transcripts from the generator, performing strict type-checking and data validation. Malformed records are gracefully skipped and logged.
+* Transform: Converts raw dictionaries into strongly-typed `CallRecord` dataclasses. Calculates total call durations and extracts partition keys using Python's `datetime` module.
+* Load: Connects to Cassandra using the DataStax driver. Utilizes prepared statements to duplicate and insert records across multiple query-optimized tables simultaneously.
 
-### Phase 1: Foundation & Data Generation (Component 1)
-**Goal:** Create the dummy data that will fuel the rest of the system.
-* [ ] **Repo Setup:** Initialize git, create the `README.md`, and set up the `./transcripts/` directory. - David and jathan
-* [ ] **Generator Core:** Create the `TranscriptGenerator` class and `CallTranscript` dataclass in Python. - Jathan 
-* [ ] **CLI Argument Parsing:** Implement `argparse` to allow configuring the number of transcripts (default 50) and output directory. - David
-* [ ] **Logic & Randomization:** Implement weighted randomness for categories (40% BILLING, 35% TECHNICAL, 15% SALES, 10% GENERAL). Enforce IVR containment rules (Technical/Sales always escalate, Billing 60% contained).  - Jathan
-* [ ] **File I/O:** Write the generated JSON files to the target directory. - David
+### 3. Database (Apache Cassandra)
+The database utilizes a strict Query-First Design. Because Cassandra does not support SQL JOINs, the schema intentionally denormalizes and duplicates incoming data across three distinct tables, each optimized for a specific read access pattern:
+* `calls_by_date`: Partitioned by date for time-series analysis.
+* `calls_by_agent`: Partitioned by agent ID for performance tracking.
+* `calls_by_category`: Partitioned by call category for volume trends.
 
-### Phase 2: Database Initialization & Schema (Component 3)
-**Goal:** Stand up the database and define the query-first architecture before building the ETL. 
-* [ ] **Docker Setup:** Spin up a local Cassandra instance using Docker. 
-* [ ] **Keyspace Creation:** Create the `clearcall` keyspace with `SimpleStrategy`.
-* [ ] **Table 1 (`calls_by_date`):** Design table for time-of-day analysis (Partition key: `call_date`).
-* [ ] **Table 2 (`calls_by_agent`):** Design table for agent metrics (Partition key: `agent_id`).
-* [ ] **Table 3 (`calls_by_category`):** Design table for category trends (Partition key: `call_category`).
+### 4. Reporting Service (Spring Boot)
+A Java REST API built with Spring Boot and Spring Data Cassandra. It maps the complex composite primary keys (Partition + Clustering keys) to entity classes. Because Cassandra cannot perform distributed aggregations (like `AVG()` or `COUNT()`), the service layer leverages Java 8 Streams to calculate average handle times and category groupings in memory before returning formatted Data Transfer Objects (DTOs) to the client.
 
-### Phase 3: The ETL Pipeline (Component 2)
-**Goal:** Read the generated JSON, transform it, and load it into Cassandra.
-* [ ] **Data Models:** Define the `CallRecord` dataclass. - David and Jathan
-* [ ] **Extract (`parser.py`):** Read JSON files, validate required fields, and gracefully skip/log malformed records without crashing. - Jathan
-* [ ] **Transform (`transformer.py`):** Convert raw JSON dicts into `CallRecord` objects. Calculate `duration_seconds` using `datetime` math and extract `call_date`. - David
-* [ ] **Load (`loader.py`):** Use the `cassandra-driver` Python package to insert a single `CallRecord` into all three Cassandra tables simultaneously. - David
-* [ ] **Orchestration (`main.py`):** Tie the Extract, Transform, and Load steps together into a single executable script with CLI arguments. - Jathan
+## Setup and Installation
 
-### Phase 4: Java Reporting Service (Component 4)
-**Goal:** Expose the Cassandra data via a Spring Boot REST API.
-* [ ] **Project Setup:** Initialize Spring Boot with `spring-boot-starter-web` and `spring-boot-starter-data-cassandra`. Configure `application.yml`.
-* [ ] **Entity Mapping:** Create `CallByDate`, `CallByAgent`, and `CallByCategory` entities using `@Table` and `@PrimaryKeyColumn`.
-* [ ] **Repositories:** Create the three corresponding interfaces extending `CassandraRepository`.
-* [ ] **Agent Endpoints:** Build `GET /analytics/agents/{agentId}/calls` and `GET /analytics/agents/{agentId}/handle-time`. Use Java Streams to calculate the average handle time.
-* [ ] **Global Endpoints:** Build `GET /analytics/categories` and `GET /analytics/calls?date={date}`.
+### Prerequisites
+* Docker
+* Python 3.11 or higher
+* Java 17 or higher
+* Maven
+
+### Step 1: Database Initialization
+1. Start a local Cassandra instance using Docker:
+   docker run --name clearcall-cassandra -p 9042:9042 -d cassandra:latest
+2. Wait 60 seconds for the container to initialize.
+3. Open the Cassandra shell:
+   docker exec -it clearcall-cassandra cqlsh
+4. Execute the schema commands located in the database documentation to create the keyspace and tables.
+
+### Step 2: Run the Pipeline
+1. Install the Python Cassandra driver:
+   pip install cassandra-driver
+2. Run the data generator to create transcripts:
+   python TranscriptGenerator.py --output ./transcripts --count 50
+3. Run the ETL pipeline to load the data into Cassandra:
+   python etl/main.py --input ./transcripts --host localhost --keyspace clearcall
+
+### Step 3: Start the API
+1. Navigate to the Spring Boot project directory.
+2. Run the application using Maven:
+   mvn spring-boot:run
+3. The server will start on `http://localhost:8090`.
+
+## API Endpoints
+
+### Global Analytics
+* `GET /analytics/categories` - Returns call counts and average handle times grouped by category.
+* `GET /analytics/calls?date={YYYY-MM-DD}` - Returns a list of all calls that occurred on a specific date.
+
+### Agent Analytics
+* `GET /analytics/agents/{agentId}/calls` - Returns a list of all calls handled by a specific agent.
+* `GET /analytics/agents/{agentId}/handle-time` - Returns the average handle time (in seconds) for a specific agent.
